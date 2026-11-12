@@ -35,6 +35,7 @@ ROOT = Path(__file__).resolve().parent
 PACKAGES = ROOT / "packages"
 PRIVATE_KEY = Path(os.environ.get("CONNECTORS_KEY", Path.home() / "connectors-private.pem"))
 CHANNELS = ("stable", "beta")
+CATALOG = ROOT / "catalog.json"
 FIXED_DATE = (1980, 1, 1, 0, 0, 0)
 
 
@@ -100,26 +101,30 @@ def verify_bytes(data: bytes, signature_b64: str) -> bool:
         os.unlink(sig_path)
 
 
-def read_catalog(channel: str) -> dict:
-    path = ROOT / channel / "catalog.json"
+def read_catalog(_channel: str = "") -> dict:
+    path = CATALOG
     if not path.exists():
-        return {"apiVersion": 1, "generatedAtEpochMillis": 0, "adapters": []}
-    return json.loads(path.read_text(encoding="utf-8"))
+        return {"apiVersion": 2, "generatedAtEpochMillis": 0, "banks": []}
+    data = json.loads(path.read_text(encoding="utf-8"))
+    data.setdefault("banks", data.pop("adapters", []))
+    data["apiVersion"] = 2
+    return data
 
 
-def write_catalog(channel: str, catalog: dict) -> None:
+def write_catalog(_channel: str = "", catalog: dict | None = None) -> None:
+    catalog = catalog if catalog is not None else read_catalog()
+    catalog["apiVersion"] = 2
     catalog["generatedAtEpochMillis"] = int(datetime.now(timezone.utc).timestamp() * 1000)
-    catalog["adapters"].sort(key=lambda item: (item["id"], item["version"]))
-    path = ROOT / channel / "catalog.json"
-    path.write_text(json.dumps(catalog, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    catalog["banks"].sort(key=lambda item: (item["id"], item["version"]))
+    CATALOG.write_text(json.dumps(catalog, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
 def upsert(catalog: dict, entry: dict) -> None:
-    catalog["adapters"] = [
-        item for item in catalog["adapters"]
+    catalog["banks"] = [
+        item for item in catalog["banks"]
         if not (item["id"] == entry["id"] and item["version"] == entry["version"])
     ]
-    catalog["adapters"].append(entry)
+    catalog["banks"].append(entry)
 
 
 def base_url() -> str:
@@ -169,12 +174,24 @@ def build(args: argparse.Namespace) -> None:
         "withdrawn": False,
         "changelog": args.changelog or "",
     }
-    for channel in [c.strip() for c in args.channels.split(",") if c.strip()]:
+    icon_path = args.icon or (str(src / icon) if icon and (src / icon).exists() else "")
+    if icon_path:
+        catalog_entry["iconPng"] = base64.b64encode(Path(icon_path).read_bytes()).decode("ascii")
+    channels = [c.strip() for c in args.channels.split(",") if c.strip()]
+    for channel in channels:
         if channel not in CHANNELS:
             fail(f"неизвестный канал {channel}")
-        catalog = read_catalog(channel)
-        upsert(catalog, catalog_entry)
-        write_catalog(channel, catalog)
+    catalog = read_catalog()
+    # у банка один пакет на версию: канал — поле записи, а не отдельный файл
+    catalog["banks"] = [
+        item for item in catalog["banks"]
+        if not (item["id"] == catalog_entry["id"] and item["version"] == catalog_entry["version"])
+    ]
+    for channel in channels:
+        record = dict(catalog_entry)
+        record["channel"] = channel
+        catalog["banks"].append(record)
+    write_catalog(catalog=catalog)
 
     print(f"пакет: {target} ({len(package_bytes)} байт)")
     print(f"sha256: {digest}")
@@ -182,11 +199,10 @@ def build(args: argparse.Namespace) -> None:
 
 
 def promote(args: argparse.Namespace) -> None:
-    beta = read_catalog("beta")
-    stable = read_catalog("stable")
+    catalog = read_catalog()
     entry = next(
-        (item for item in beta["adapters"]
-         if item["id"] == args.id and item["version"] == args.version),
+        (item for item in catalog["banks"]
+         if item["id"] == args.id and item["version"] == args.version and item.get("channel") == "beta"),
         None,
     )
     if entry is None:
@@ -194,12 +210,11 @@ def promote(args: argparse.Namespace) -> None:
     package = PACKAGES / args.id / f"{args.version}.zip"
     if not package.exists():
         fail(f"нет файла {package}")
-    if sha256_hex(package.read_bytes()) != entry["sha256"]:
-        fail("sha256 пакета не совпадает с записью в бете")
-    if not verify_bytes(package.read_bytes(), entry["signature"]):
-        fail("подпись пакета не проверяется")
-    upsert(stable, dict(entry))
-    write_catalog("stable", stable)
+    data = package.read_bytes()
+    if sha256_hex(data) != entry["sha256"] or not verify_bytes(data, entry["signature"]):
+        fail("пакет не совпадает с подписанной записью")
+    entry["channel"] = "stable"
+    write_catalog(catalog=catalog)
     print(f"{args.id} {args.version} теперь в стабильном канале")
 
 
@@ -211,7 +226,7 @@ def verify(args: argparse.Namespace) -> None:
     for channel in CHANNELS:
         catalog = read_catalog(channel)
         entry = next(
-            (item for item in catalog["adapters"]
+            (item for item in catalog["banks"]
              if item["id"] == args.id and item["version"] == args.version),
             None,
         )
@@ -225,8 +240,11 @@ def verify(args: argparse.Namespace) -> None:
 def list_catalogs(_args: argparse.Namespace) -> None:
     for channel in CHANNELS:
         catalog = read_catalog(channel)
-        print(f"{channel}:")
-        for item in sorted(catalog["adapters"], key=lambda i: (i["id"], i["version"])):
+        print(f"{channel}: (channel per record)")
+        for item in sorted(
+            [b for b in catalog["banks"] if b.get("channel", "stable") == channel],
+            key=lambda i: (i["id"], i["version"]),
+        ):
             flag = " (отозван)" if item.get("withdrawn") else ""
             print(f"  {item['id']} {item['version']}{flag}")
 
@@ -241,6 +259,7 @@ def main() -> None:
     build_parser.add_argument("--min-app-version", type=int, default=None)
     build_parser.add_argument("--channels", default="beta")
     build_parser.add_argument("--changelog", default="")
+    build_parser.add_argument("--icon", default="", help="PNG для списка банков в каталоге")
     build_parser.set_defaults(func=build)
 
     promote_parser = sub.add_parser("promote", help="перенести версию из беты в стабильный")
