@@ -1,0 +1,4 @@
+connectors-private*.pem
+*.key
+tmp/
+__pycache__/

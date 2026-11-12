@@ -1,0 +1,20 @@
+{
+  "id": "vtb",
+  "version": 12,
+  "apiVersion": 1,
+  "minAppVersion": 1,
+  "entry": "adapter.js",
+  "scriptSha256": "753189f9fe157f5e33da9bed7929ef7e5141c9a71612ee2fe752c9ee676c50af",
+  "hosts": [
+    "online.vtb.ru"
+  ],
+  "permissions": [
+    "HTTP",
+    "STATE",
+    "VAULT",
+    "PAGE"
+  ],
+  "title": "ВТБ",
+  "credentials": [],
+  "icon": "icon.png"
+}
