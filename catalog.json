@@ -1,7 +1,19 @@
 {
   "apiVersion": 2,
-  "generatedAtEpochMillis": 1794586962386,
+  "generatedAtEpochMillis": 1794601572388,
   "banks": [
+    {
+      "id": "gazprombank",
+      "version": 1,
+      "apiVersion": 1,
+      "minAppVersion": 1,
+      "url": "https://mbiuib.github.io/finassist-connectors/packages/gazprombank/1.zip",
+      "sha256": "ced06edb8bdcafbd2604fa71fe98d4ef9f26b561292d533728d3d64d61453c21",
+      "signature": "iZrXLA+rB6UeW82B2SfKSK8nJKBQjdjpZiyjEUw6k/mSjQgt4kzq1ZlwGsA8XVgiybqZY1FXHVUnTbOVWNeECnrecB+7CbAbWqsIKm5i77M9DPPSx8tTSF+jUXcGpaEZbN63zXUhhDI59B3JdVfinw2s+DmxoO/w2uw6EO5DvdkbcZ/u+WwogGcloGL2k5ar76wIB2tt/9xvFdlY9zztWcybOPEtaFNB3lwmr8uvYz1k8j3vi1fqUumyilEEB/RAaa3bhgdqWfewt7OqY6Owmo+lcCIfdE6N3hMYaJi6KSt13nsJiRMQJxY9ezH7phYS+amlQ9BvUoWb79WR2PxNNr+dWosSXsPIRKPbRgfcgUQ7M5Z7poDC3P3kYI8D1auIMqyVyZSyD4InGPBcdUVwa0Pt6ZkBBwLDFvB366ZQLjgqm0BfH5ckPhX5kbV3cBqyBNcGiNQqDACrTIfyOFHN3JQejNljJOBWCqO2V+jdGkR9wv4klIEfnvwDtfqwJQ+h92Nwr8PGxLbtW9Zdgc9sivwtvgVBv+Dtevwo/xmgHJLa0xcDSkeJBNKJyLLjmRmgYdMpt7FLa7jJCdqvOhrK6HktzhwK+1fiD6io2U62JzYl2AIROs+9XqMk24pqFC/PD2NyUKfrV+r5X2coN3KcihssODLLZPmb0z5ITynItaw=",
+      "withdrawn": false,
+      "changelog": "",
+      "channel": "beta"
+    },
     {
       "id": "vtb",
       "version": 12,

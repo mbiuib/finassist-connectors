@@ -6,7 +6,8 @@
   "entry": "adapter.js",
   "hosts": [
     "ib.online.gpb.ru",
-    "online.gpb.ru"
+    "omni.online.gpb.ru",
+    "auth.online.gpb.ru"
   ],
   "permissions": [
     "HTTP",
