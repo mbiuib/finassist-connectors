@@ -56,18 +56,11 @@ function request(ctx, path, body) {
  * а переключаем раздел кабинета и читаем ответы их же запросов.
  */
 function captureRoutes(ctx, routes, timeoutMs) {
+  // Перехват уже стоит (его ставит приложение до загрузки кабинета).
+  // Ждём, пока кабинет сам запросит карты и вклады, и забираем журнал.
   var script =
-    "var log=[];" +
-    "var of=window.fetch;" +
-    "window.fetch=function(){var p=of.apply(this,arguments);try{p.then(function(r){try{r.clone().text().then(function(t){log.push({url:String(r.url||''),body:t});});}catch(e){}});}catch(e){}return p;};" +
-    "var oo=XMLHttpRequest.prototype.open, os=XMLHttpRequest.prototype.send;" +
-    "XMLHttpRequest.prototype.open=function(m,u){this.__u=u;return oo.apply(this,arguments);};" +
-    "XMLHttpRequest.prototype.send=function(){var x=this;x.addEventListener('load',function(){try{log.push({url:String(x.__u||''),body:x.responseText});}catch(e){}});return os.apply(this,arguments);};" +
-    "var sleep=function(ms){return new Promise(function(r){setTimeout(r,ms);});};" +
-    "var routes=" + JSON.stringify(routes) + ";" +
-    "for(var i=0;i<routes.length;i++){try{history.pushState({},'',routes[i]);window.dispatchEvent(new PopStateEvent('popstate'));}catch(e){}await sleep(3500);}" +
-    "await sleep(" + timeoutMs + ");" +
-    "return log;";
+    "await new Promise(function(r){setTimeout(r,6000);});" +
+    "return window.__finassistLog || [];";
   var answer = ctx.page.run(PAGE_URL, script);
   var data = typeof answer === "string" ? JSON.parse(answer) : answer;
   var text = data && data.result !== undefined ? data.result : data;

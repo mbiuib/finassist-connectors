@@ -1,6 +1,6 @@
 {
   "id": "gazprombank",
-  "version": 6,
+  "version": 7,
   "apiVersion": 1,
   "minAppVersion": 1,
   "entry": "adapter.js",
