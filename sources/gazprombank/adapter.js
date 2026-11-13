@@ -23,10 +23,6 @@ function openSession(ctx) {
   if (session.cookies) ctx.vault.put("cookies", session.cookies);
 }
 
-function ensureSession(ctx) {
-  if (!ctx.vault.get("cookies")) openSession(ctx);
-}
-
 /** Выполняет запрос из страницы банка и возвращает разобранный JSON. */
 function request(ctx, path, body) {
   var payload = JSON.stringify(body || { meta: { channel: "ib" } });
@@ -125,7 +121,8 @@ function collect(list, mapper, out, seen) {
 }
 
 function readAccounts(ctx) {
-  ensureSession(ctx);
+  // Сессия живёт в cookie-хранилище WebView, а не в vault: страница банка
+  // открывается заново с теми же cookies и остаётся авторизованной.
   var seen = {};
   var result = [];
 
@@ -196,7 +193,6 @@ function readHistory(ctx, accountId, from, to) {
 }
 
 function readOperations(ctx, range) {
-  ensureSession(ctx);
   var accounts = readAccounts(ctx);
   var operations = [];
   for (var i = 0; i < accounts.length; i++) {

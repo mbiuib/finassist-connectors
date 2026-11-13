@@ -165,6 +165,7 @@ def build(args: argparse.Namespace) -> None:
 
     catalog_entry = {
         "id": manifest["id"],
+        "title": manifest.get("title", ""),
         "version": args.version,
         "apiVersion": manifest["apiVersion"],
         "minAppVersion": manifest["minAppVersion"],
