@@ -262,11 +262,15 @@ function readHistory(ctx, accountId, from, to) {
 
 function readOperations(ctx, range) {
   var accounts = readAccounts(ctx);
-  var operations = [];
-  for (var i = 0; i < accounts.length; i++) {
-    var account = accounts[i];
-    var part = readHistory(ctx, account.externalId, range.from, range.to);
-    for (var j = 0; j < part.length; j++) operations.push(part[j]);
+  // История тоже берётся из запросов кабинета: их телом управляет их код.
+  var log = captureRoutes(ctx, ["/history"], 4000);
+  var payload = findPayload(log, "/client/operation/list", "operations");
+  var operations = (payload && payload.data && payload.data.operations) || [];
+  var accountId = accounts.length > 0 ? accounts[0].externalId : "";
+  var result = [];
+  for (var i = 0; i < operations.length; i++) {
+    var item = operationFrom(operations[i], accountId);
+    if (item.externalId) result.push(item);
   }
-  return { operations: operations, complete: true, gaps: [] };
+  return { operations: result, complete: true, gaps: [] };
 }
