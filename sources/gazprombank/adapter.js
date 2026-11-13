@@ -30,7 +30,12 @@ function request(ctx, path, body) {
     "var r = await fetch(" + JSON.stringify(OMNI + path) + ", {" +
     " method: \"POST\"," +
     " credentials: \"include\"," +
-    " headers: { \"Content-Type\": \"application/json\", \"Accept\": \"application/json\" }," +
+    " headers: {" +
+    " \"Content-Type\": \"application/json\"," +
+    " \"Accept\": \"application/json\"," +
+    " \"GPB-Accept\": \"application/json, text/plain, */*\"," +
+    " \"GPB-AcceptLanguage\": \"ru\"" +
+    " }," +
     " body: " + JSON.stringify(payload) +
     " });" +
     " if (!r.ok) { throw new Error(\"HTTP \" + r.status); }" +
