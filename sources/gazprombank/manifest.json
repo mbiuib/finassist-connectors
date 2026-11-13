@@ -1,0 +1,19 @@
+{
+  "id": "gazprombank",
+  "version": 1,
+  "apiVersion": 1,
+  "minAppVersion": 1,
+  "entry": "adapter.js",
+  "hosts": [
+    "ib.online.gpb.ru",
+    "online.gpb.ru"
+  ],
+  "permissions": [
+    "HTTP",
+    "STATE",
+    "VAULT",
+    "PAGE"
+  ],
+  "title": "Газпромбанк",
+  "credentials": []
+}
