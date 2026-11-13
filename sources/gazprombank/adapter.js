@@ -195,13 +195,15 @@ function readAccountsOnce(ctx) {
     if (u.indexOf("gpb.ru") >= 0) urls.push(u.split("?")[0]);
   }
   if (urls.length > 0) {
-    ctx.fail("capture_empty", "captured " + urls.length + ": " + urls.join(" | ").slice(0, 700));
+    var sizes = [];
+    for (var j = 0; j < log.length; j++) {
+      var u2 = String(log[j].url || "");
+      if (u2.indexOf("omni.online.gpb.ru") >= 0) sizes.push(u2.split("?")[0] + " " + String(log[j].body || "").length);
+    }
+    ctx.fail("capture_empty", "gpb " + urls.length + ", omni " + sizes.length + ": " + sizes.join(" | ").slice(0, 900));
   }
 
-  // Если кабинет ничего не запросил (другой маршрут), пробуем прямой запрос.
-  var direct = request(ctx, CARDS, { meta: { channel: "ib" } });
-  collect(((direct.data || {}).cards) || [], accountFromCard, result, seen);
-  return result;
+  ctx.fail("capture_empty", "журнал пуст: кабинет не сделал запросов");
 }
 
 function bookedDate(operation) {
