@@ -14,7 +14,7 @@ var ACCOUNTS = "/omni-oks-information/api/v2/client/account/list";
 var DEPOSITS = "/omni-oks-information/api/v2/client/deposit/list";
 var HISTORY = "/omni-operation-history/api/v3/client/operation/list/main";
 
-function openSession(ctx) {
+function loginPage(ctx) {
   var session = ctx.page.open({
     url: LOGIN_URL,
     capture: ["cookies"],
@@ -120,7 +120,21 @@ function collect(list, mapper, out, seen) {
   }
 }
 
+/** Повторяет чтение после входа: сессия могла протухнуть между запусками. */
+function withSession(ctx, read) {
+  try {
+    return read();
+  } catch (e) {
+    loginPage(ctx);
+    return read();
+  }
+}
+
 function readAccounts(ctx) {
+  return withSession(ctx, function () { return readAccountsOnce(ctx); });
+}
+
+function readAccountsOnce(ctx) {
   // Сессия живёт в cookie-хранилище WebView, а не в vault: страница банка
   // открывается заново с теми же cookies и остаётся авторизованной.
   var seen = {};
