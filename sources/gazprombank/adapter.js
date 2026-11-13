@@ -87,6 +87,16 @@ function findPayload(log, marker, shape) {
   return fallback;
 }
 
+
+/** Закрытость продукта: банк помечает её в state/operatingMode и даёт дату закрытия. */
+function closedInfo(item) {
+  var state = text((item.state || {}).code) || "";
+  var mode = text(item.operatingMode) || "";
+  var closed = /clos|arch|закры/i.test(state + " " + mode);
+  var date = text(item.contractCloseDatePlan) || text(item.contractCloseDate) || text(item.closeDate);
+  return { closed: closed, date: date };
+}
+
 /** Суммы банк отдаёт в копейках; строки с точкой переводим в минорные единицы. */
 function minor(value) {
   if (value === null || value === undefined || value === "") return null;
@@ -124,7 +134,9 @@ function accountFromCard(card) {
     balanceMinor: minor(balance.value),
     currencyCode: text(balance.currency) || "RUB",
     maskedNumber: text(card.maskNum),
-    openedAt: text(card.contractStartDate)
+    openedAt: text(card.contractStartDate),
+    isClosed: closedInfo(card).closed,
+    closedAt: closedInfo(card).date
   };
 }
 
@@ -138,7 +150,9 @@ function accountFromDeposit(deposit) {
     balanceMinor: minor(balance.value),
     currencyCode: text(balance.currency) || "RUB",
     maskedNumber: text(detail.accNum),
-    openedAt: text(deposit.contractStartDate)
+    openedAt: text(deposit.contractStartDate),
+    isClosed: closedInfo(deposit).closed,
+    closedAt: closedInfo(deposit).date
   };
 }
 
@@ -151,7 +165,9 @@ function accountFromAccount(account) {
     balanceMinor: minor(balance.value),
     currencyCode: text(balance.currency) || "RUB",
     maskedNumber: text(account.maskNum) || text(account.number),
-    openedAt: text(account.contractStartDate)
+    openedAt: text(account.contractStartDate),
+    isClosed: closedInfo(account).closed,
+    closedAt: closedInfo(account).date
   };
 }
 
