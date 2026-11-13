@@ -1,6 +1,6 @@
 {
   "apiVersion": 2,
-  "generatedAtEpochMillis": 1794603464241,
+  "generatedAtEpochMillis": 1794603730983,
   "banks": [
     {
       "id": "gazprombank",
@@ -49,6 +49,19 @@
       "url": "https://mbiuib.github.io/finassist-connectors/packages/gazprombank/4.zip",
       "sha256": "49fda1d6f9565596aa6e6551541c610be3c5362121ac79c2dd2c4f6ea3e8c1c1",
       "signature": "FgDTXwtLnw1q5F+2vBoP39mjsBdPymKYx1iIdC6CtRiWH20ey1Um0SxXRa/K7nnRIGyMnzCpTEwZrNtKgcDSdiC87rGZE9bPR6vrTE9DX/tUyaKO9bYksIsvOhpLheGiVqWPG+xKjN/Q7yZyCWHnVWsbZKZ16zsZrCEcqRuHQyWIkLKQdrz+6Fl18rm0wVR33voQuG9rlGf0Jivx0LwCuGE65fJqruTZ2JB3vlyF7dJtgt8nOU4RuV3/ZsSxL0yoeNcEMJQt0bseo4ejgIk2tcSIv45uOG3iAfo/Mr61UkgsXHE4UF/vcJtBcmDmO7xtXIo/5LaR8JZxZgcXwZzlrjezPXCXZ/eiXgotawP/e3ZT/emMIYzHsC/POGo1r8ZwhKrZ2RGahXGW9MtklgcZoxmA4Xa5g3TE/c3fbjiWBolJVV4xOJIvph/QgZAz3punDwNfUIqkysZdncydwg8CIgU8x8NC/OzBBDzNEdTPto0fp3qCeyoqVaOGchHKMKArfp/RzcSskxBMctL/AeHHn/gHruMRQD1Y25zQao4XvY6iSA3HO992VEUhOVReAs5FusUpe5xCzRWZFyonz2n5X/4h6tda4VmJSibOXyOWLSc4zKquUkvq2m2Xb+p5g2VVXnHAQQVJjVNls5ma23L5yl2quOW/6jgwN/34I4y2r3U=",
+      "withdrawn": false,
+      "changelog": "",
+      "channel": "beta"
+    },
+    {
+      "id": "gazprombank",
+      "title": "Газпромбанк",
+      "version": 5,
+      "apiVersion": 1,
+      "minAppVersion": 1,
+      "url": "https://mbiuib.github.io/finassist-connectors/packages/gazprombank/5.zip",
+      "sha256": "0c926f2dab88852fe3e2517229e8f86202531f16a0d1e0a9b133262aa4793340",
+      "signature": "VALS1zYs1E2IkR/tpJ46F3iZFC04HtmTMw0kW4/DeP2OPODo4ruJSJSy5B6xBVYH2mA4n1AgjLkjK/Rgudc7rXNxNtZ0XAXwgS3F90NgRmeWuQqW4MJqyvlrxP+6wysRQNsvOjn9WMVrPTSu4OnygQoEst46qBlIwoz3jpD5yx7OKc04jo2U8DsGmoOvo7ggnAts+1vwsEfvKPDDaBkH7yVumz34ep7mF1u/vO1mwY4p+1Q2JR0+ROiqZ0se7XgyswV97GinVrC/NjF36M8/0fcVQ9gOwXQ3VaYNQ4Vx9fnliR2O90GdShSMJzMJSrAuCBTt3y1UuwFsfvE/fbFG7hGN9zyuXqqPcuY7X5SA9OtCAGz9yDWVWfBeVfDuRDBG9mxNHbYeryUjtw95EGPD/c+p8n8COK2vhAoevmRWltGma/HcKuWhU+nv8gfwr3T2CX0IXeJpUOXp+gPJZPpW/yJ0k6NO6PJh70UoWq7Xl1rvMEy+ti8d4GqKZ0epIrbD8O3y7SKRyGymggmcaaghKje3WbDVxUcQaQyFSrgko3k9tgRfwaqGfSXXQJtJV9y/nL6ei2H0EbnkTu+eHQDx8D92SeInn5CC5pSoqstLjwzSA4M4XR3OV22xZd3YqEjsYTXIw3sck68G4ENY24fyeiJQ5DYO5JiOBINUzYg8qLs=",
       "withdrawn": false,
       "changelog": "",
       "channel": "beta"

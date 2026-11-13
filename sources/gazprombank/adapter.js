@@ -48,6 +48,45 @@ function request(ctx, path, body) {
   return text;
 }
 
+
+/**
+ * Ловит ответы, которые приложение банка запрашивает само.
+ *
+ * Подпись X-GIB-* ставит их сетевой слой, поэтому мы не дергаем fetch сами,
+ * а переключаем раздел кабинета и читаем ответы их же запросов.
+ */
+function captureRoutes(ctx, routes, timeoutMs) {
+  var script =
+    "var log=[];" +
+    "var of=window.fetch;" +
+    "window.fetch=function(){var p=of.apply(this,arguments);try{p.then(function(r){try{r.clone().text().then(function(t){log.push({url:String(r.url||''),body:t});});}catch(e){}});}catch(e){}return p;};" +
+    "var oo=XMLHttpRequest.prototype.open, os=XMLHttpRequest.prototype.send;" +
+    "XMLHttpRequest.prototype.open=function(m,u){this.__u=u;return oo.apply(this,arguments);};" +
+    "XMLHttpRequest.prototype.send=function(){var x=this;x.addEventListener('load',function(){try{log.push({url:String(x.__u||''),body:x.responseText});}catch(e){}});return os.apply(this,arguments);};" +
+    "var sleep=function(ms){return new Promise(function(r){setTimeout(r,ms);});};" +
+    "var routes=" + JSON.stringify(routes) + ";" +
+    "for(var i=0;i<routes.length;i++){try{history.pushState({},'',routes[i]);window.dispatchEvent(new PopStateEvent('popstate'));}catch(e){}await sleep(3500);}" +
+    "await sleep(" + timeoutMs + ");" +
+    "return log;";
+  var answer = ctx.page.run(PAGE_URL, script);
+  var data = typeof answer === "string" ? JSON.parse(answer) : answer;
+  var text = data && data.result !== undefined ? data.result : data;
+  if (typeof text === "string") text = JSON.parse(text);
+  return text || [];
+}
+
+function findPayload(log, marker) {
+  for (var i = 0; i < log.length; i++) {
+    var item = log[i];
+    if (String(item.url).indexOf(marker) < 0) continue;
+    try {
+      var parsed = JSON.parse(item.body);
+      if (parsed && parsed.data) return parsed;
+    } catch (e) {}
+  }
+  return null;
+}
+
 /** Суммы банк отдаёт в копейках; строки с точкой переводим в минорные единицы. */
 function minor(value) {
   if (value === null || value === undefined || value === "") return null;
@@ -140,20 +179,19 @@ function readAccounts(ctx) {
 }
 
 function readAccountsOnce(ctx) {
-  // Сессия живёт в cookie-хранилище WebView, а не в vault: страница банка
-  // открывается заново с теми же cookies и остаётся авторизованной.
+  // Сначала пробуем поймать запросы самого кабинета: их подписывает их сетевой слой.
+  var log = captureRoutes(ctx, ["/cards", "/deposits"], 2500);
   var seen = {};
   var result = [];
+  var cards = findPayload(log, "/client/card/list");
+  collect(((cards && cards.data && cards.data.cards) || []), accountFromCard, result, seen);
+  var deposits = findPayload(log, "/client/deposit/list");
+  collect(((deposits && deposits.data && deposits.data.deposits) || []), accountFromDeposit, result, seen);
+  if (result.length > 0) return result;
 
-  var cards = request(ctx, CARDS, { meta: { channel: "ib" } });
-  collect(((cards.data || {}).cards) || [], accountFromCard, result, seen);
-
-  var deposits = request(ctx, DEPOSITS, { meta: { channel: "ib" } });
-  collect(((deposits.data || {}).deposits) || [], accountFromDeposit, result, seen);
-
-  var accounts = request(ctx, ACCOUNTS, { meta: { channel: "ib" } });
-  collect(((accounts.data || {}).accounts) || [], accountFromAccount, result, seen);
-
+  // Если кабинет ничего не запросил (другой маршрут), пробуем прямой запрос.
+  var direct = request(ctx, CARDS, { meta: { channel: "ib" } });
+  collect(((direct.data || {}).cards) || [], accountFromCard, result, seen);
   return result;
 }
 
