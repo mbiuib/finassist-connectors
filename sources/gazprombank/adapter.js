@@ -44,7 +44,7 @@ function request(ctx, path, body) {
   var data = typeof answer === "string" ? JSON.parse(answer) : answer;
   var text = data && data.result !== undefined ? data.result : data;
   if (typeof text === "string") text = JSON.parse(text);
-  if (text && text.error) ctx.fail("bank_error", String(text.error));
+  if (text && text.error) ctx.fail("bank_error", typeof text.error === "object" ? JSON.stringify(text.error) : String(text.error));
   return text;
 }
 
@@ -188,6 +188,12 @@ function readAccountsOnce(ctx) {
   var deposits = findPayload(log, "/client/deposit/list");
   collect(((deposits && deposits.data && deposits.data.deposits) || []), accountFromDeposit, result, seen);
   if (result.length > 0) return result;
+
+  var urls = [];
+  for (var i = 0; i < log.length; i++) urls.push(log[i].url);
+  if (urls.length > 0) {
+    ctx.fail("capture_empty", "captured " + urls.length + ": " + urls.join(" | ").slice(0, 700));
+  }
 
   // Если кабинет ничего не запросил (другой маршрут), пробуем прямой запрос.
   var direct = request(ctx, CARDS, { meta: { channel: "ib" } });

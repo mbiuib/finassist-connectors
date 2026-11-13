@@ -1,6 +1,6 @@
 {
   "apiVersion": 2,
-  "generatedAtEpochMillis": 1794603730983,
+  "generatedAtEpochMillis": 1794603998934,
   "banks": [
     {
       "id": "gazprombank",
@@ -62,6 +62,19 @@
       "url": "https://mbiuib.github.io/finassist-connectors/packages/gazprombank/5.zip",
       "sha256": "0c926f2dab88852fe3e2517229e8f86202531f16a0d1e0a9b133262aa4793340",
       "signature": "VALS1zYs1E2IkR/tpJ46F3iZFC04HtmTMw0kW4/DeP2OPODo4ruJSJSy5B6xBVYH2mA4n1AgjLkjK/Rgudc7rXNxNtZ0XAXwgS3F90NgRmeWuQqW4MJqyvlrxP+6wysRQNsvOjn9WMVrPTSu4OnygQoEst46qBlIwoz3jpD5yx7OKc04jo2U8DsGmoOvo7ggnAts+1vwsEfvKPDDaBkH7yVumz34ep7mF1u/vO1mwY4p+1Q2JR0+ROiqZ0se7XgyswV97GinVrC/NjF36M8/0fcVQ9gOwXQ3VaYNQ4Vx9fnliR2O90GdShSMJzMJSrAuCBTt3y1UuwFsfvE/fbFG7hGN9zyuXqqPcuY7X5SA9OtCAGz9yDWVWfBeVfDuRDBG9mxNHbYeryUjtw95EGPD/c+p8n8COK2vhAoevmRWltGma/HcKuWhU+nv8gfwr3T2CX0IXeJpUOXp+gPJZPpW/yJ0k6NO6PJh70UoWq7Xl1rvMEy+ti8d4GqKZ0epIrbD8O3y7SKRyGymggmcaaghKje3WbDVxUcQaQyFSrgko3k9tgRfwaqGfSXXQJtJV9y/nL6ei2H0EbnkTu+eHQDx8D92SeInn5CC5pSoqstLjwzSA4M4XR3OV22xZd3YqEjsYTXIw3sck68G4ENY24fyeiJQ5DYO5JiOBINUzYg8qLs=",
+      "withdrawn": false,
+      "changelog": "",
+      "channel": "beta"
+    },
+    {
+      "id": "gazprombank",
+      "title": "Газпромбанк",
+      "version": 6,
+      "apiVersion": 1,
+      "minAppVersion": 1,
+      "url": "https://mbiuib.github.io/finassist-connectors/packages/gazprombank/6.zip",
+      "sha256": "a116f60f01198d872682fb04c3b8a996e20aaa4930aacc8ae6e87ec8fbe122f2",
+      "signature": "JdH17DzedCslTTggf22Fc8Gw16TGM3k2K0E3bQ0c3Me9V9GEM9mXAr9eMc+03P1yUt2c1eLrG512byuhhznZLF4NMfhW0pwzPrwvq5ga0TS3Cj2h9Y5E9H1BWgepzJE+MFnEMxMlEcY9AvX+5pRFDt+f/5TUm2Il43L9o9JHTqf5/ImAetl2XzIdV9Jkg6TrgOqyjszg9a4uLrzEjqBMbpgPkxOWb/zFQNLlrPG7dtn6sRq0nP+UWbO8j21zrt+q9LrcM1T31ChuWAAiI+ZeimG5d+LeyyUbjZEBZiky78o72swnQiPHIUiN7tR2+T3AiRiO2irsGk7MbH7nDnZLOKMcNT3TGrq+8IS3SNuUkuEy52gubrj7AEo1WfA0NddGqs6mBuog5p/c5ao5RgxN4geTC3Eo1L8719OTPsiR20QlBz92PfD7YiVO7+yNyu7Uo7OQ0JpgmrGMkqfAjc5ag99YP/6DptNtiznnkwARy1A6mrKQpCqxxQ9UCZbzVBqv75BUwU7v26poaCOwrPeTL6B4QTu48K0TXTJYwTeOcIKAk/+VlVf96tuHzNbxN9ZYB1FXVdhIB5D6yUETiQRRClpS+lSDNO7AqbMgKwJ6v1paFIf2gVyvTzCHN8pmEbDLsp4uvrXBszPuK53pVr8IQ92PrnWRBmx97en3/st0IY0=",
       "withdrawn": false,
       "changelog": "",
       "channel": "beta"
