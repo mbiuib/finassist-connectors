@@ -68,16 +68,23 @@ function captureRoutes(ctx, routes, timeoutMs) {
   return text || [];
 }
 
-function findPayload(log, marker) {
+function findPayload(log, marker, shape) {
+  var fallback = null;
   for (var i = 0; i < log.length; i++) {
     var item = log[i];
-    if (String(item.url).indexOf(marker) < 0) continue;
+    var body = String(item.body || "");
+    if (!body) continue;
+    var byUrl = String(item.url).indexOf(marker) >= 0;
+    // Иногда URL запроса не содержит имени сервиса (XHR с относительным путём),
+    // поэтому ищем и по форме ответа.
+    if (!byUrl && body.indexOf('"' + shape + '"') < 0) continue;
     try {
-      var parsed = JSON.parse(item.body);
-      if (parsed && parsed.data) return parsed;
+      var parsed = JSON.parse(body);
+      if (parsed && parsed.data && parsed.data[shape]) return parsed;
+      if (parsed && parsed.data && parsed.data[shape] === undefined && byUrl && !fallback) fallback = parsed;
     } catch (e) {}
   }
-  return null;
+  return fallback;
 }
 
 /** Суммы банк отдаёт в копейках; строки с точкой переводим в минорные единицы. */
@@ -176,14 +183,17 @@ function readAccountsOnce(ctx) {
   var log = captureRoutes(ctx, ["/cards", "/deposits"], 2500);
   var seen = {};
   var result = [];
-  var cards = findPayload(log, "/client/card/list");
+  var cards = findPayload(log, "/client/card/list", "cards");
   collect(((cards && cards.data && cards.data.cards) || []), accountFromCard, result, seen);
-  var deposits = findPayload(log, "/client/deposit/list");
+  var deposits = findPayload(log, "/client/deposit/list", "deposits");
   collect(((deposits && deposits.data && deposits.data.deposits) || []), accountFromDeposit, result, seen);
   if (result.length > 0) return result;
 
   var urls = [];
-  for (var i = 0; i < log.length; i++) urls.push(log[i].url);
+  for (var i = 0; i < log.length; i++) {
+    var u = String(log[i].url || "");
+    if (u.indexOf("gpb.ru") >= 0) urls.push(u.split("?")[0]);
+  }
   if (urls.length > 0) {
     ctx.fail("capture_empty", "captured " + urls.length + ": " + urls.join(" | ").slice(0, 700));
   }
